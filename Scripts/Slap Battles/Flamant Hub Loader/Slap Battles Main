@@ -1,0 +1,228 @@
+
+--Properties
+local Player = nil
+local Character = nil
+local Humanoid = nil
+local HRP = nil
+
+local extendedToggle = false
+
+local IsPremium = false
+local IsVerifiedUser = false
+
+--Better hitbox expander
+local Players = game:GetService("Players")
+
+local function updateHumanoidRootPart(player, ignoreSelfPlayer)
+	if ignoreSelfPlayer == true and player == game.Players.LocalPlayer then
+		return
+	end
+
+	local character = player.Character or player.CharacterAdded:Wait()
+	local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+
+	humanoidRootPart.Size = Vector3.new(30, 30, 30)
+	humanoidRootPart.Material = "ForceField"
+	humanoidRootPart.Transparency = 0
+	humanoidRootPart.Color = Color3.fromRGB(255, 0, 0)
+	humanoidRootPart.CastShadow = false -- Prevents it being dark around player
+
+	character.ChildAdded:Connect(function(child)
+		if child:IsA("Humanoid") then
+			child.RootPart.Size = Vector3.new(30, 30, 30)
+			child.RootPart.Material = "ForceField"
+			child.RootPart.Transparency = 0
+			child.RootPart.Color = Color3.fromRGB(255, 0, 0)
+		end
+	end)
+end
+
+local function resetHumanoidRootPart(player, ignoreSelfPlayer)
+	if ignoreSelfPlayer == true and player == game.Players.LocalPlayer then
+		return
+	end
+
+	local character = player.Character or player.CharacterAdded:Wait()
+	local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+
+	humanoidRootPart.Size = character.Torso.Size
+	humanoidRootPart.Material = "SmoothPlastic"
+	humanoidRootPart.Transparency = 1
+	humanoidRootPart.Color = Color3.fromRGB(255, 255, 255)
+	humanoidRootPart.CastShadow = true
+
+end
+
+
+
+local function ResetProperties()
+    Player = game.Players.LocalPlayer
+    Character = Player.Character
+    Humanoid = Character.Humanoid
+    HRP = Character.HumanoidRootPart
+end
+ResetProperties()
+-- Library
+local OrionLib = loadstring(game:HttpGet(('https://raw.githubusercontent.com/shlexware/Orion/main/source')))()
+
+OrionLib:MakeNotification({
+	Name = "Flamant Hub",
+	Content = "by stinky#7030",
+	Image = "rbxassetid://4483345998",
+	Time = 5
+})
+
+
+local Window = OrionLib:MakeWindow({Name = "Flamant Hub", HidePremium = false, SaveConfig = true, ConfigFolder = "Orion"})
+
+
+--Main--
+
+local MainTab = Window:MakeTab({
+	Name = "Main",
+	Icon = "rbxassetid://4483345998",
+	PremiumOnly = false
+})
+
+local MainSection = MainTab:AddSection({
+	Name = "Main"
+})
+
+MainSection:AddToggle({
+	Name = "Extended Hitboxes", -- Name of the toggle
+	Default = false, -- What the default value is
+	Callback = function(Value)
+		if Value == true then
+			extendedToggle = true
+			for _, player in ipairs(Players:GetPlayers()) do
+				if not player.Character:FindFirstChild("HumanoidRootPart") then
+					continue -- If marked as an error in VSC, disable exp-in-action through diagnostic.
+				end
+				updateHumanoidRootPart(player, true)
+			end
+		elseif Value == false then
+			extendedToggle = false
+			for _, player in ipairs(Players:GetPlayers()) do
+				if not player.Character:FindFirstChild("HumanoidRootPart") then
+					continue -- If marked as an error in VSC, disable exp-in-action through diagnostic.
+				end
+				resetHumanoidRootPart(player, true)
+			end
+		end
+	end    
+})
+
+
+--Player Tab--
+
+local PlayerTab = Window:MakeTab({
+	Name = "Player",
+	Icon = "rbxassetid://2795572803",
+	PremiumOnly = false
+})
+
+local PlayerSection = PlayerTab:AddSection({
+	Name = "Player"
+})
+
+
+
+PlayerSection:AddSlider({
+	Name = "Walkspeed", -- Name of the slider
+	Min = 16, -- Minimum value of the slider
+	Max = 100, -- Maximum value of the slider
+	Default = 16, -- What the default value is for the slider
+	Color = Color3.fromRGB(255,255,255), -- The color of the slider
+	Increment = 1, -- How much slider changes on drag
+	ValueName = "Walkspeed",-- Value name
+	Callback = function(Value) -- Receives the slider input and sets the value
+        game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = Value
+	end    
+})
+PlayerSection:AddButton({
+	Name = "Reset",
+	Callback = function()
+        ResetProperties()
+        wait()
+        Humanoid.Health = 0
+  	end    
+})
+
+--Player Tab End--
+
+
+
+
+--Settings Tab--
+
+local SettingsTab = Window:MakeTab({
+	Name = "Settings",
+	Icon = "rbxassetid://9753762573",
+	PremiumOnly = false
+})
+
+local SettingsSection = SettingsTab:AddSection({
+	Name = "Settings"
+})
+
+SettingsSection:AddButton({
+	Name = "Destroy UI",
+	Callback = function()
+        OrionLib:Destroy()
+  	end    
+})
+
+
+
+SettingsSection:AddButton({
+	Name = "funny",
+	Callback = function()
+        print("i shit myself")
+  	end    
+})
+
+
+if IsPremium == true then
+    local PremiumTab = Window:MakeTab({
+        Name = "Premium",
+        Icon = "rbxassetid://3057073095",
+        PremiumOnly = false
+    })
+end
+if IsVerifiedUser == true then
+    local VerifiedTab = Window:MakeTab({
+        Name = "Special",
+        Icon = "rbxassetid://11322089619",
+        PremiumOnly = false
+    })
+end
+
+--Settings End--
+
+-- Loop
+while game:GetService("RunService").Stepped:Wait() do
+	for _, player in ipairs(Players:GetPlayers()) do
+		local success, error = pcall(function()
+			if player == nil then 
+				print("player is nil")
+				return 
+			end
+			if not player.Character then 
+				return 
+			end
+			if not player.Character:FindFirstChild("HumanoidRootPart") then
+				return
+			end
+			if extendedToggle == false then 
+				return 
+			end
+			updateHumanoidRootPart(player, true)
+		end)
+		if not success then
+			warn("Error occurred while updating humanoid root part:", error)
+		end
+	end
+end
+
+-- Keep this line of code ahead of every other code as it is where it breaks the rest of the code.
+OrionLib:Init() --UI Lib End
