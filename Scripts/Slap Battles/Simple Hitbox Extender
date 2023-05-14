@@ -1,0 +1,21 @@
+--[[
+
+A simple hitbox extender. Works by making players HumanoidRootPart size to be bigger.
+
+You can take the code without giving credit it's nothing big
+]]
+
+for i,v in pairs(game.Players:GetChildren()) do
+
+	v.Character.HumanoidRootPart.Size = Vector3.new(30,500,30)
+	v.Character.HumanoidRootPart.Material = "ForceField"
+	v.Character.HumanoidRootPart.Transparency = 0
+
+	v.Character.HumanoidRootPart.Color = Color3.fromRGB(255,0,0)
+	if v == game.Players.LocalPlayer then 
+  -- Required so you don't float off the ground cuz of your size
+		v.Character.HumanoidRootPart.Size = v.Character.Torso.Size
+		v.Character.HumanoidRootPart.Material = "SmoothPlastic"
+		v.Character.HumanoidRootPart.Transparency = 1
+	end
+end
