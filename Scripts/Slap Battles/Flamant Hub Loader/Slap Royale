@@ -1,3 +1,4 @@
+---@diagnostic disable: exp-in-action
 
 --Properties
 local Player = nil
@@ -86,6 +87,45 @@ local MainTab = Window:MakeTab({
 
 local MainSection = MainTab:AddSection({
 	Name = "Main"
+})
+MainSection:AddButton({
+	Name = "Get All Items",
+	Callback = function()
+        ResetProperties()
+        wait()
+        if Player.inMatch.Value == true then
+            for _,descendant in (workspace:GetDescendants()) do
+                if descendant:IsA('Tool') then
+                    if descendant.Handle:FindFirstChildOfClass("TouchTransmitter") then 
+                        local item = descendant
+                        Humanoid:EquipTool(item)
+                        wait(.01)
+                        Humanoid:UnequipTools()
+                    end
+                end
+            end
+            return
+        elseif Player.inMatch.Value == false then
+            OrionLib:MakeNotification({
+                Name = "Notice",
+                Content = "You will receive all items on match start!",
+                Image = "rbxassetid://0",
+                Time = 3.75
+            })
+            Player.inMatch.Value:GetPropertyChangedSignal("Value"):Connect(function() 
+                for _,descendant in (workspace:GetDescendants()) do
+                    if descendant:IsA('Tool') then
+                        if descendant.Handle:FindFirstChildOfClass("TouchTransmitter") then 
+                            local item = descendant
+                            Humanoid:EquipTool(item)
+                            wait(.01)
+                            Humanoid:UnequipTools()
+                        end
+                    end
+                end
+            end)
+        end
+  	end    
 })
 
 MainSection:AddToggle({
