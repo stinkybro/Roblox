@@ -1,0 +1,8 @@
+local config = 
+{
+    ["Style"] = "test";
+    ["test1"] = "test";
+    ["secondoption"] = "test";
+}
+
+return config
